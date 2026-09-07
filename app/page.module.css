@@ -1,7 +1,7 @@
 .shell {
   max-width: 680px;
   margin: 0 auto;
-  padding: 56px 24px 96px;
+  padding: clamp(28px, 8vw, 56px) clamp(16px, 5vw, 24px) 72px;
   position: relative;
 }
 
@@ -12,7 +12,7 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: 900px;
-  height: 260px;
+  height: clamp(140px, 30vw, 260px);
   pointer-events: none;
   opacity: 0.5;
   z-index: 0;
@@ -22,12 +22,12 @@
   position: relative;
   z-index: 1;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: clamp(28px, 6vw, 40px);
 }
 
 .wordmark {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: clamp(0.95rem, 3.5vw, 1.05rem);
   letter-spacing: 0.02em;
   color: var(--gold-bright);
   margin: 0 0 4px;
@@ -37,7 +37,8 @@
 .tagline {
   margin: 0;
   color: var(--ivory-dim);
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 3vw, 0.95rem);
+  padding: 0 8px;
 }
 
 .searchForm {
@@ -50,13 +51,16 @@
 
 .searchInput {
   flex: 1;
+  min-width: 0;
   background: var(--indigo-900);
   border: 1px solid var(--line);
   border-radius: 10px;
-  padding: 15px 18px;
+  padding: 14px 16px;
   color: var(--ivory);
-  font-size: 1.05rem;
+  font-size: max(1rem, 16px);
   font-family: var(--font-body);
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .searchInput::placeholder {
@@ -72,11 +76,14 @@
   color: var(--indigo-950);
   border: none;
   border-radius: 10px;
-  padding: 0 24px;
+  padding: 0 clamp(16px, 4vw, 24px);
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.15s ease;
+  min-height: 48px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .searchButton:hover {
@@ -102,6 +109,8 @@
   margin-top: 40px;
   text-align: center;
   color: var(--ivory-dim);
+  padding: 0 8px;
+  overflow-wrap: anywhere;
 }
 
 .errorBox {
@@ -114,20 +123,22 @@
   padding: 16px 18px;
   color: var(--ivory);
   font-size: 0.95rem;
+  overflow-wrap: anywhere;
 }
 
 .results {
   position: relative;
   z-index: 1;
-  margin-top: 36px;
+  margin-top: clamp(28px, 6vw, 36px);
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: clamp(22px, 5vw, 28px);
 }
 
 .card {
   border-top: 1px solid var(--line);
-  padding-top: 24px;
+  padding-top: clamp(18px, 4vw, 24px);
+  min-width: 0;
 }
 
 .card:first-child {
@@ -138,17 +149,18 @@
 .cardHead {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
   margin-bottom: 10px;
 }
 
 .headword {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 6vw, 2rem);
   font-weight: 600;
   margin: 0;
   color: var(--ivory);
+  overflow-wrap: anywhere;
 }
 
 .wordClass {
@@ -165,13 +177,14 @@
   background: transparent;
   color: var(--ivory);
   border-radius: 999px;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .playButton:hover {
@@ -183,6 +196,7 @@
   margin: 0 0 16px;
   padding-left: 22px;
   color: var(--ivory);
+  overflow-wrap: anywhere;
 }
 
 .definitions li {
@@ -205,6 +219,7 @@
   background: var(--indigo-900);
   border-radius: 8px;
   padding: 12px 14px;
+  overflow-wrap: anywhere;
 }
 
 .exampleIgbo {
@@ -231,6 +246,8 @@
   border-radius: 8px;
   padding: 6px 12px;
   font-size: 0.88rem;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .dialectRegion {
@@ -246,8 +263,37 @@
 .footer {
   position: relative;
   z-index: 1;
-  margin-top: 64px;
+  margin-top: clamp(44px, 10vw, 64px);
   text-align: center;
   color: var(--ivory-dim);
   font-size: 0.82rem;
+  padding: 0 8px;
+}
+
+/* Small phones: stack the search bar so the button never gets cramped */
+@media (max-width: 420px) {
+  .searchForm {
+    flex-direction: column;
+  }
+
+  .searchButton {
+    width: 100%;
+  }
+
+  .motif {
+    opacity: 0.35;
+  }
+}
+
+/* Larger touch targets for touch/coarse pointers, regardless of screen
+   width (covers tablets, foldables, etc.) */
+@media (pointer: coarse) {
+  .playButton {
+    width: 44px;
+    height: 44px;
+  }
+
+  .searchButton {
+    min-height: 48px;
+  }
 }

@@ -163,7 +163,7 @@ export default function Home() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Type an Igbo or English word, e.g. ​mma, water, biko"
+          placeholder="Type an Igbo or English word, e.g. mma, water, biko"
           aria-label="Search for a word"
           autoFocus
         />
