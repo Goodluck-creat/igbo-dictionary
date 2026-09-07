@@ -1,0 +1,10 @@
+To show your real photo in the "About the developer" section:
+
+1. Add a photo file to this /public folder named exactly: author.jpg
+   (a square photo, at least 300x300px, works best)
+2. Commit and push. Vercel will redeploy automatically.
+
+Until author.jpg exists, the site shows a gold circle with your initials
+("OC") instead — the layout won't break either way.
+
+You can delete this text file once you've added your photo.

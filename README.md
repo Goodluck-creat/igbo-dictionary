@@ -55,6 +55,16 @@ vercel --prod
    - `IGBO_API_KEY` = your IgboAPI token
 4. Deploy. Your dictionary is now live at the `*.vercel.app` URL Vercel gives you.
 
+## Adding your photo
+
+The "About the developer" section shows a gold initials circle until you add
+a real photo. To use your own picture:
+
+1. Add a square photo to `public/author.jpg` (at least 300×300px).
+2. Commit and push — Vercel redeploys automatically.
+
+No code changes needed; the page automatically looks for `/author.jpg`.
+
 ## How it's built
 
 - `app/page.js` — the search UI (client component).

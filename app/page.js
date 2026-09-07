@@ -165,6 +165,96 @@ function WordCard({ entry }) {
   );
 }
 
+// Shows /author.jpg if it's been added to the /public folder; otherwise
+// falls back to a set of initials so the layout never shows a broken image.
+function AuthorPhoto({ initials }) {
+  const [broken, setBroken] = useState(false);
+
+  if (broken) {
+    return (
+      <div className={styles.avatarFallback} aria-hidden="true">
+        {initials}
+      </div>
+    );
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/igodictionary.jpg"
+      alt="Oguchi Michael Chinedu"
+      className={styles.avatarImg}
+      onError={() => setBroken(true)}
+    />
+  );
+}
+
+function AboutDeveloper() {
+  return (
+    <section className={styles.about} aria-label="About the developer">
+      <div className={styles.aboutHead}>
+        <div className={styles.avatar}>
+          <AuthorPhoto initials="OC" />
+        </div>
+        <div>
+          <h2 className={styles.aboutName}>Oguchi Michael Chinedu</h2>
+          <p className={styles.aboutRole}>
+            Computer scientist &amp; author of this Igbo dictionary
+          </p>
+        </div>
+      </div>
+
+      <div className={styles.aboutBody}>
+        <h3 className={styles.aboutHeading}>Biographical background</h3>
+        <p>
+          Oguchi Michael Chinedu is from Nnewi South Local Government of Anambra State,
+          Amichi precisely. He is a student and emerging computer scientist who studied at
+          Nnamdi Azikiwe University from 2021 to 2026. During his time at the university, he
+          developed a strong interest in African language technology, particularly the
+          documentation and digital processing of Igbo, one of Nigeria&rsquo;s major
+          indigenous languages. His academic training combined language studies with
+          practical computing skills, which prepared him to create structured linguistic
+          resources.
+        </p>
+
+        <h3 className={styles.aboutHeading}>Major work and approach</h3>
+        <p>
+          Chinedu is the author of an Igbo machine-readable dictionary. This digital
+          resource organizes Igbo words, meanings, parts of speech, and related linguistic
+          information in a structured, computer-friendly format. Unlike traditional printed
+          dictionaries, a machine-readable dictionary is designed so that computers and
+          language software can easily read, search, and use the data. This makes it useful
+          for applications such as translation tools, spell-checkers, educational apps, and
+          natural language processing systems for Igbo.
+        </p>
+        <p>
+          His work focuses on accuracy, clear organization, and accessibility. By presenting
+          Igbo vocabulary in a format that both humans and machines can use, the dictionary
+          helps preserve the language while supporting modern technology.
+        </p>
+
+        <h3 className={styles.aboutHeading}>Influences and impact</h3>
+        <p>
+          Chinedu&rsquo;s project was influenced by the growing need for digital resources in
+          African languages and by the academic environment at Nnamdi Azikiwe University.
+          The dictionary contributes to language preservation and technological inclusion.
+          It can serve students, researchers, software developers, and everyday Igbo
+          speakers who want better digital tools for their language.
+        </p>
+
+        <h3 className={styles.aboutHeading}>Personal reflection</h3>
+        <p>
+          As the author, Chinedu&rsquo;s work shows how a university student can combine
+          classroom learning with practical innovation. Creating a machine-readable Igbo
+          dictionary demonstrates both technical skill and cultural commitment. The project
+          highlights the importance of developing digital tools for indigenous languages so
+          they remain relevant and usable in the modern world.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("idle"); // idle | loading | error | done
@@ -238,6 +328,8 @@ export default function Home() {
           ))}
         </section>
       ) : null}
+
+      <AboutDeveloper />
 
       <footer className={styles.footer}>
         Word data from{" "}
