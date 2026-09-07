@@ -60,24 +60,72 @@ function PlayButton({ src, label }) {
   );
 }
 
+// The API can hand back plain strings in some places and small objects in
+// others (e.g. a definition group, or a field that changed shape). This
+// makes sure we never try to render a raw object as text, which is what
+// caused the earlier crash — instead we pull out something sensible or
+// skip it quietly.
+function safeText(value) {
+  if (value == null) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  if (Array.isArray(value)) return value.map(safeText).filter(Boolean).join("; ");
+  if (typeof value === "object") {
+    return value.text || value.definition || value.igbo || value.english || value.word || "";
+  }
+  return "";
+}
+
+// Real definitions come back grouped by word class, like:
+//   { wordClass: "noun", definitions: ["hunger", "desire"], nsibidi: "..." }
+// but some entries (or older data) may just be a plain string. Normalize
+// both into { wordClass, items } so rendering doesn't have to care.
+function normalizeDefinitionGroups(rawDefinitions) {
+  if (!Array.isArray(rawDefinitions)) return [];
+
+  return rawDefinitions
+    .map((group) => {
+      if (typeof group === "string") {
+        return { wordClass: null, items: [group] };
+      }
+      if (group && typeof group === "object") {
+        const items = Array.isArray(group.definitions)
+          ? group.definitions.map(safeText).filter(Boolean)
+          : [safeText(group)].filter(Boolean);
+        return { wordClass: group.wordClass || null, items };
+      }
+      return { wordClass: null, items: [] };
+    })
+    .filter((group) => group.items.length > 0);
+}
+
 function WordCard({ entry }) {
-  const dialects = entry.dialects || [];
-  const examples = entry.examples || [];
+  const dialects = Array.isArray(entry.dialects) ? entry.dialects : [];
+  const examples = Array.isArray(entry.examples) ? entry.examples : [];
+  const definitionGroups = normalizeDefinitionGroups(entry.definitions);
 
   return (
     <article className={`${styles.card} fade-in`}>
       <div className={styles.cardHead}>
-        <h2 className={styles.headword}>{entry.word}</h2>
-        {entry.wordClass ? <span className={styles.wordClass}>{entry.wordClass}</span> : null}
-        <PlayButton src={entry.pronunciation} label={entry.word} />
+        <h2 className={styles.headword}>{safeText(entry.word)}</h2>
+        <PlayButton src={entry.pronunciation} label={safeText(entry.word)} />
       </div>
 
-      {entry.definitions && entry.definitions.length > 0 ? (
-        <ol className={styles.definitions}>
-          {entry.definitions.map((def, i) => (
-            <li key={i}>{def}</li>
+      {definitionGroups.length > 0 ? (
+        <div className={styles.definitionGroups}>
+          {definitionGroups.map((group, gi) => (
+            <div key={gi} className={styles.definitionGroup}>
+              {group.wordClass ? (
+                <span className={styles.wordClass}>{group.wordClass}</span>
+              ) : null}
+              <ol className={styles.definitions}>
+                {group.items.map((def, i) => (
+                  <li key={i}>{def}</li>
+                ))}
+              </ol>
+            </div>
           ))}
-        </ol>
+        </div>
       ) : (
         <p className={styles.tagline}>No definition on file for this entry.</p>
       )}
@@ -86,10 +134,10 @@ function WordCard({ entry }) {
         <>
           <p className={styles.sectionLabel}>Example sentences</p>
           <div className={styles.examples}>
-            {examples.slice(0, 3).map((ex) => (
-              <div className={styles.example} key={ex.id || ex.igbo}>
-                <p className={styles.exampleIgbo}>{ex.igbo}</p>
-                <p className={styles.exampleEnglish}>{ex.english}</p>
+            {examples.slice(0, 3).map((ex, i) => (
+              <div className={styles.example} key={ex.id || i}>
+                <p className={styles.exampleIgbo}>{safeText(ex.igbo)}</p>
+                <p className={styles.exampleEnglish}>{safeText(ex.english)}</p>
               </div>
             ))}
           </div>
@@ -103,9 +151,11 @@ function WordCard({ entry }) {
             {dialects.map((d, i) => (
               <span className={styles.dialectChip} key={i}>
                 <span className={styles.dialectRegion}>
-                  {(d.dialects || []).join(", ") || "Variant"}
+                  {Array.isArray(d.dialects) && d.dialects.length > 0
+                    ? d.dialects.join(", ")
+                    : "Variant"}
                 </span>
-                <span className={styles.dialectWord}>{d.word}</span>
+                <span className={styles.dialectWord}>{safeText(d.word)}</span>
               </span>
             ))}
           </div>
@@ -183,8 +233,8 @@ export default function Home() {
 
       {results.length > 0 ? (
         <section className={styles.results} aria-label="Search results">
-          {results.map((entry) => (
-            <WordCard entry={entry} key={entry.id} />
+          {results.map((entry, i) => (
+            <WordCard entry={entry} key={entry.id || i} />
           ))}
         </section>
       ) : null}
